@@ -1,11 +1,11 @@
-from django.shortcuts import render
+from django.views.generic import TemplateView
+from datetime import datetime
 
 
-def index(request):
-    return render(request, 'transcendence/index.html')
+class IndexView(TemplateView):
+    template_name = "transcendence/index.html"
 
 
-def user_info(request, user_id):
-    return render(request,
-                  'transcendence/user_info.html',
-                  {'user_id': user_id})
+class UserInfoView(TemplateView):
+    template_name = "transcendence/user_info.html"
+    registration_date = datetime.now()

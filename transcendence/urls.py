@@ -1,7 +1,7 @@
 from django.urls import path
-from . import views
+from transcendence.views import IndexView, UserInfoView
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('users/<int:user_id>/', views.user_info, name='user_info')
+    path('', IndexView.as_view()),
+    path('users/<int:user_id>/', UserInfoView.as_view()),
 ]
