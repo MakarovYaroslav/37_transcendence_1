@@ -1,2 +1,2 @@
-export SECRET_KEY='_8bs5mh5_mi!$5l^ei%o=0i1@wdgqlumkzsrbjv0x(7upqf=f0'
-export RAVEN_DSN='https://13246f187f104bafa49e2a706d5536be:bedbf0cffd0e46eb8d68b0be7b48c7a4@sentry.io/285001'
+export SECRET_KEY='your_secret_key'
+export RAVEN_DSN='your_client_key(dsn)'
