@@ -10,10 +10,7 @@ class BaseConfig(Configuration):
     # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
     # SECURITY WARNING: keep the secret key used in production secret!
-    SECRET_KEY = '_8bs5mh5_mi!$5l^ei%o=0i1@wdgqlumkzsrbjv0x(7upqf=f0'
-
-    # SECURITY WARNING: don't run with debug turned on in production!
-    # DEBUG = True
+    SECRET_KEY = os.getenv('SECRET_KEY')
 
     ALLOWED_HOSTS = []
 
@@ -112,7 +109,7 @@ class BaseConfig(Configuration):
     # Sentry config
 
     RAVEN_CONFIG = {
-        'dsn': 'https://13246f187f104bafa49e2a706d5536be:bedbf0cffd0e46eb8d68b0be7b48c7a4@sentry.io/285001',
+        'dsn': os.getenv('RAVEN_DSN'),
         # If you are using git, you can also automatically configure the
         # release based on the git info.
         # 'release': raven.fetch_git_sha(os.path.abspath(os.pardir)),
