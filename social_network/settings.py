@@ -3,18 +3,11 @@ import os
 
 
 class BaseConfig(Configuration):
-    # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    # Quick-start development settings - unsuitable for production
-    # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
-
-    # SECURITY WARNING: keep the secret key used in production secret!
     SECRET_KEY = os.getenv('SECRET_KEY')
 
     ALLOWED_HOSTS = []
-
-    # Application definition
 
     INSTALLED_APPS = [
         'django.contrib.admin',
@@ -58,18 +51,12 @@ class BaseConfig(Configuration):
 
     WSGI_APPLICATION = 'social_network.wsgi.application'
 
-    # Database
-    # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
-
-    # Password validation
-    # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
     AUTH_PASSWORD_VALIDATORS = [
         {
@@ -86,9 +73,6 @@ class BaseConfig(Configuration):
         },
     ]
 
-    # Internationalization
-    # https://docs.djangoproject.com/en/2.0/topics/i18n/
-
     LANGUAGE_CODE = 'en-us'
 
     TIME_ZONE = 'UTC'
@@ -99,20 +83,12 @@ class BaseConfig(Configuration):
 
     USE_TZ = True
 
-    # Static files (CSS, JavaScript, Images)
-    # https://docs.djangoproject.com/en/2.0/howto/static-files/
-
     STATIC_URL = '/static/'
 
     TEMPLATE_DIRS = (os.path.join(BASE_DIR,  'templates'),)
 
-    # Sentry config
-
     RAVEN_CONFIG = {
         'dsn': os.getenv('RAVEN_DSN'),
-        # If you are using git, you can also automatically configure the
-        # release based on the git info.
-        # 'release': raven.fetch_git_sha(os.path.abspath(os.pardir)),
     }
 
     LOGGING = {
@@ -126,7 +102,7 @@ class BaseConfig(Configuration):
         },
         'handlers': {
             'sentry': {
-                'level': 'ERROR',  # To capture more than ERROR, change to WARNING, INFO, etc.
+                'level': 'ERROR',
                 'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
                 'tags': {'custom-tag': 'x'},
             },
