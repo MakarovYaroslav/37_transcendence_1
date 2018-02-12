@@ -1,7 +1,5 @@
 from django.views.generic import TemplateView
-from datetime import datetime
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
 
 
 class IndexView(TemplateView):
