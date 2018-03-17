@@ -1,5 +1,8 @@
 from configurations import Configuration
 import os
+import mimetypes
+
+mimetypes.add_type("text/css", ".css", True)
 
 
 class BaseConfig(Configuration):
@@ -7,6 +10,9 @@ class BaseConfig(Configuration):
 
     SECRET_KEY = os.getenv('SECRET_KEY')
 
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    STATIC_URL = '/static/'
+    
     ALLOWED_HOSTS = []
 
     INSTALLED_APPS = [
@@ -53,8 +59,12 @@ class BaseConfig(Configuration):
 
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT'),
         }
     }
 
@@ -82,8 +92,6 @@ class BaseConfig(Configuration):
     USE_L10N = True
 
     USE_TZ = True
-
-    STATIC_URL = '/static/'
 
     TEMPLATE_DIRS = (os.path.join(BASE_DIR,  'templates'),)
 
