@@ -62,7 +62,7 @@ class BaseConfig(Configuration):
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': os.getenv('DB_NAME'),
             'USER': 'postgres',
-            'PASSWORD': '',
+            'PASSWORD': 'postgres',
             'HOST': 'localhost',
             'PORT': '5432',
         }
