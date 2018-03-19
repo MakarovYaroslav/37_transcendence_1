@@ -12,7 +12,7 @@ http{
     }
 
     server {
-        listen 8000;
+        listen 80;
         server_name localhost;
         charset utf-8;
 
