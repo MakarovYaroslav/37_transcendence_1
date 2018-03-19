@@ -12,8 +12,8 @@ class BaseConfig(Configuration):
 
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     STATIC_URL = '/static/'
-    
-    ALLOWED_HOSTS = []
+
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '165.227.129.249']
 
     INSTALLED_APPS = [
         'django.contrib.admin',
@@ -150,4 +150,3 @@ class DevelopmentConfig(BaseConfig):
 
 class ProductionConfig(BaseConfig):
     DEBUG = False
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
