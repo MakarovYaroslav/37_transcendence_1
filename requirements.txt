@@ -4,3 +4,4 @@ raven==6.5.0
 psycopg2==2.7.3.2
 envtpl==0.5.3
 uWSGI==2.0.17
+Fabric==1.14.0
