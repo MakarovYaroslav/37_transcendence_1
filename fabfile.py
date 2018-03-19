@@ -23,7 +23,6 @@ def install_system_packages():
         sudo('apt-get install python3-pip python3-dev libpq-dev postgresql '
              'postgresql-contrib')
         sudo('apt-get install git')
-        sudo('apt-get update')
         sudo('pip3 install virtualenv')
     return
 
@@ -59,7 +58,6 @@ def install_pip_requirements():
         sudo('virtualenv %s' % PROJECT_NAME)
     with cd(PROJECT_ROOT):
         sudo('source bin/activate && pip3 install -r requirements.txt')
-        sudo('source bin/activate && pip3 install uwsgi')
     return
 
 
@@ -97,7 +95,7 @@ def create_uwsgi_config_from_tpl(tpl_filename):
 
 
 @task
-def deploy():
+def bootstrap():
     install_system_packages()
     recreate_database()
     change_postgres_user_password(DB_PASSWORD)
