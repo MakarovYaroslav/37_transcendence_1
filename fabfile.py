@@ -16,6 +16,10 @@ env.user = os.getenv('HOST_USER')
 env.password = os.getenv('HOST_PASSWORD')
 
 
+class FabricException(Exception):
+    pass
+
+
 def install_system_packages():
     with settings(prompts={'Do you want to continue? [Y/n] ': 'Y'}):
         sudo('apt-get install python3')
@@ -28,11 +32,12 @@ def install_system_packages():
 
 
 def recreate_database():
-    try:
-        sudo('su - postgres psql -c "dropdb %s"' % DB_NAME)
-    except:
-        pass
-    sudo('su - postgres psql -c "createdb %s"' % DB_NAME)
+    with settings(abort_exception=FabricException):
+        try:
+            sudo('su - postgres psql -c "dropdb %s"' % DB_NAME)
+        except FabricException:
+            pass
+        sudo('su - postgres psql -c "createdb %s"' % DB_NAME)
     return
 
 
