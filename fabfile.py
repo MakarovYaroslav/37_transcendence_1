@@ -20,13 +20,12 @@ class FabricException(Exception):
 
 
 def install_system_packages():
-    with settings(prompts={'Do you want to continue? [Y/n] ': 'Y'}):
-        sudo('apt-get install python3')
-        sudo('apt-get install nginx')
-        sudo('apt-get install python3-pip python3-dev libpq-dev postgresql '
-             'postgresql-contrib')
-        sudo('apt-get install git')
-        sudo('pip3 install virtualenv')
+    sudo('apt-get -y install python3')
+    sudo('apt-get -y install nginx')
+    sudo('apt-get -y install python3-pip python3-dev libpq-dev postgresql '
+         'postgresql-contrib')
+    sudo('apt-get -y install git')
+    sudo('pip3 install virtualenv')
     return
 
 
@@ -76,9 +75,7 @@ def create_dj_superuser():
 
 
 def collect_static():
-    with settings(prompts={"Type 'yes' to continue, or 'no' "
-                           "to cancel: ": 'yes'}):
-        sudo('python3 manage.py collectstatic')
+    sudo('python3 manage.py collectstatic --no-input')
     return
 
 
