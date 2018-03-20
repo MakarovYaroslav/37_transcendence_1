@@ -6,8 +6,7 @@ PROJECT_NAME = os.getenv('PROJECT_NAME')
 DB_NAME = os.getenv('DB_NAME')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 PROJECT_PATH = os.getenv('PROJECT_PATH')
-PROJECT_ROOT = PROJECT_PATH + '/' + PROJECT_NAME
-VENV_DIR = os.path.join(PROJECT_ROOT, '.venv')
+PROJECT_ROOT = os.path.join(PROJECT_PATH, PROJECT_NAME)
 REPO = '%s/%s.git' % (os.getenv('USER_REPO'), PROJECT_NAME)
 
 env.hosts = [os.getenv('HOST')]
@@ -86,8 +85,8 @@ def collect_static():
 def create_nginx_symlink_from_tpl(tpl_filename):
     sudo('PROJECT_PATH=$PROJECT_PATH PROJECT_NAME=$PROJECT_NAME envtpl '
          'configs/%s --keep-template' % tpl_filename)
-    sudo('ln -sf %s/%s/configs/nginx.conf '
-         '/etc/nginx/nginx.conf' % (PROJECT_PATH, PROJECT_NAME))
+    sudo('ln -sf %s/configs/nginx.conf '
+         '/etc/nginx/nginx.conf' % (os.path.join(PROJECT_PATH, PROJECT_NAME)))
     sudo('service nginx restart')
     return
 
