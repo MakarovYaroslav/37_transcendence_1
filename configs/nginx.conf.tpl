@@ -25,7 +25,7 @@ http{
 
         location / {
             uwsgi_pass  django;
-            include     {{ PROJECT_PATH }}/{{ PROJECT_NAME }}/uwsgi_params;
+            include     {{ PROJECT_PATH }}/{{ PROJECT_NAME }}/configs/uwsgi_params;
         }
     }
 }
