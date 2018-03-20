@@ -1,5 +1,5 @@
 import os
-from fabric.api import cd, env, prefix, sudo, task, settings
+from fabric.api import cd, env, prefix, sudo, task, settings, run
 from fabric.contrib.files import exists
 
 PROJECT_NAME = os.getenv('PROJECT_NAME')
@@ -65,17 +65,17 @@ def install_pip_requirements():
 
 
 def create_dj_superuser():
-    sudo('python3 manage.py migrate')
+    run('python3 manage.py migrate')
     superuser_password = os.getenv('SUPERUSER_PASSWORD')
     with settings(prompts={"Password: ": superuser_password,
                            "Password (again): ": superuser_password}):
-        sudo('python3 manage.py createsuperuser --username admin '
-             '--email admin@admin.com')
+        run('python3 manage.py createsuperuser --username admin '
+            '--email admin@admin.com')
     return
 
 
 def collect_static():
-    sudo('python3 manage.py collectstatic --no-input')
+    run('python3 manage.py collectstatic --no-input')
     return
 
 
