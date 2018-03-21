@@ -9,10 +9,8 @@ PROJECT_PATH = os.getenv('PROJECT_PATH')
 PROJECT_ROOT = os.path.join(PROJECT_PATH, PROJECT_NAME)
 REPO = '%s/%s.git' % (os.getenv('USER_REPO'), PROJECT_NAME)
 
-env.hosts = ['%s@%s:%s' % (os.getenv('HOST_USER'),
-                           os.getenv('HOST'),
+env.hosts = ['%s@%s:%s' % (os.getenv('HOST_USER'), os.getenv('HOST'),
                            os.getenv('HOST_PORT'))]
-env.environment = 'staging'
 env.user = os.getenv('HOST_USER')
 env.password = os.getenv('HOST_PASSWORD')
 
@@ -75,19 +73,17 @@ def collect_static():
 
 
 def create_nginx_symlink_from_tpl(tpl_filename):
-    sudo('PROJECT_PATH=%s PROJECT_NAME=%s envtpl '
-         'configs/%s --keep-template' % (PROJECT_PATH, PROJECT_NAME,
-                                         tpl_filename))
-    sudo('ln -sf %s/configs/nginx.conf '
-         '/etc/nginx/nginx.conf' % (os.path.join(PROJECT_PATH, PROJECT_NAME)))
+    sudo('PROJECT_PATH=%s PROJECT_NAME=%s envtpl %s --keep-template' % (
+        PROJECT_PATH, PROJECT_NAME, os.path.join('configs', tpl_filename)))
+    sudo('ln -sf %s /etc/nginx/nginx.conf' % (os.path.join(
+        PROJECT_PATH, PROJECT_NAME, 'configs', 'nginx.conf')))
     sudo('service nginx restart')
     return
 
 
 def create_uwsgi_config_from_tpl(tpl_filename):
-    sudo('PROJECT_PATH=%s PROJECT_NAME=%s '
-         'envtpl configs/%s --keep-template' % (PROJECT_PATH, PROJECT_NAME,
-                                                tpl_filename))
+    sudo('PROJECT_PATH=%s PROJECT_NAME=%s envtpl %s --keep-template' % (
+        PROJECT_PATH, PROJECT_NAME, os.path.join('configs', tpl_filename)))
     sudo('uwsgi --ini configs/uwsgi.ini')
     return
 
