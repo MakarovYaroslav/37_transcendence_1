@@ -46,6 +46,7 @@ def clone_or_pull_git_repo():
     else:
         with cd(PROJECT_ROOT):
             sudo('git pull origin')
+    sudo('chown -R %s %s' % (env.user, PROJECT_ROOT))
     return
 
 
@@ -68,7 +69,7 @@ def create_dj_superuser():
 
 
 def collect_static():
-    sudo('python3 manage.py collectstatic --no-input')
+    run('python3 manage.py collectstatic --no-input')
     return
 
 
@@ -102,10 +103,8 @@ def bootstrap():
     change_postgres_user_password(DB_PASSWORD)
     clone_or_pull_git_repo()
     install_pip_requirements()
-    with cd(PROJECT_ROOT):
-        with initialize_env_vars():
-            with prefix('source bin/activate'):
-                create_dj_superuser()
-                collect_static()
-                create_nginx_symlink_from_tpl('nginx.conf.tpl')
-                create_uwsgi_config_from_tpl('uwsgi.ini.tpl')
+    with cd(PROJECT_ROOT), initialize_env_vars(), prefix('source bin/activate'):
+        create_dj_superuser()
+        collect_static()
+        create_nginx_symlink_from_tpl('nginx.conf.tpl')
+        create_uwsgi_config_from_tpl('uwsgi.ini.tpl')
