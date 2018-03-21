@@ -13,7 +13,7 @@ class BaseConfig(Configuration):
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     STATIC_URL = '/static/'
 
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '165.227.129.249']
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '159.89.29.126']
 
     INSTALLED_APPS = [
         'django.contrib.admin',
