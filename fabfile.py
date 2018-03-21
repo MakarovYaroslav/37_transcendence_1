@@ -9,7 +9,9 @@ PROJECT_PATH = os.getenv('PROJECT_PATH')
 PROJECT_ROOT = os.path.join(PROJECT_PATH, PROJECT_NAME)
 REPO = '%s/%s.git' % (os.getenv('USER_REPO'), PROJECT_NAME)
 
-env.hosts = ['%s@%s:7777' % (os.getenv('HOST_USER'), os.getenv('HOST'))]
+env.hosts = ['%s@%s:%s' % (os.getenv('HOST_USER'),
+                           os.getenv('HOST'),
+                           os.getenv('HOST_PORT'))]
 env.environment = 'staging'
 env.user = os.getenv('HOST_USER')
 env.password = os.getenv('HOST_PASSWORD')
