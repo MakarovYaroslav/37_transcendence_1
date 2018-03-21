@@ -17,10 +17,6 @@ env.user = os.getenv('HOST_USER')
 env.password = os.getenv('HOST_PASSWORD')
 
 
-class FabricException(Exception):
-    pass
-
-
 def install_system_packages():
     sudo('apt-get -y install python3')
     sudo('apt-get -y install nginx')
@@ -32,11 +28,8 @@ def install_system_packages():
 
 
 def recreate_database():
-    with settings(abort_exception=FabricException):
-        try:
-            sudo('su - postgres psql -c "dropdb %s"' % DB_NAME)
-        except FabricException:
-            pass
+    with settings(warn_only=True):
+        sudo('su - postgres psql -c "dropdb %s"' % DB_NAME)
         sudo('su - postgres psql -c "createdb %s"' % DB_NAME)
     return
 
