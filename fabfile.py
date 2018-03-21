@@ -1,5 +1,5 @@
 import os
-from fabric.api import cd, env, prefix, sudo, task, settings, run
+from fabric.api import cd, env, prefix, sudo, task, settings, run, shell_env
 from fabric.contrib.files import exists
 
 PROJECT_NAME = os.getenv('PROJECT_NAME')
@@ -9,7 +9,7 @@ PROJECT_PATH = os.getenv('PROJECT_PATH')
 PROJECT_ROOT = os.path.join(PROJECT_PATH, PROJECT_NAME)
 REPO = '%s/%s.git' % (os.getenv('USER_REPO'), PROJECT_NAME)
 
-env.hosts = [os.getenv('HOST')]
+env.hosts = ['%s@%s:7777' % (os.getenv('HOST_USER'), os.getenv('HOST'))]
 env.environment = 'staging'
 env.user = os.getenv('HOST_USER')
 env.password = os.getenv('HOST_PASSWORD')
@@ -75,13 +75,14 @@ def create_dj_superuser():
 
 
 def collect_static():
-    run('python3 manage.py collectstatic --no-input')
+    sudo('python3 manage.py collectstatic --no-input')
     return
 
 
 def create_nginx_symlink_from_tpl(tpl_filename):
-    sudo('PROJECT_PATH=$PROJECT_PATH PROJECT_NAME=$PROJECT_NAME envtpl '
-         'configs/%s --keep-template' % tpl_filename)
+    sudo('PROJECT_PATH=%s PROJECT_NAME=%s envtpl '
+         'configs/%s --keep-template' % (PROJECT_PATH, PROJECT_NAME,
+                                         tpl_filename))
     sudo('ln -sf %s/configs/nginx.conf '
          '/etc/nginx/nginx.conf' % (os.path.join(PROJECT_PATH, PROJECT_NAME)))
     sudo('service nginx restart')
@@ -89,10 +90,18 @@ def create_nginx_symlink_from_tpl(tpl_filename):
 
 
 def create_uwsgi_config_from_tpl(tpl_filename):
-    sudo('PROJECT_PATH=$PROJECT_PATH PROJECT_NAME=$PROJECT_NAME '
-         'envtpl configs/%s --keep-template' % tpl_filename)
+    sudo('PROJECT_PATH=%s PROJECT_NAME=%s '
+         'envtpl configs/%s --keep-template' % (PROJECT_PATH, PROJECT_NAME,
+                                                tpl_filename))
     sudo('uwsgi --ini configs/uwsgi.ini')
     return
+
+
+def initialize_env_vars():
+    secret_key = os.getenv('SECRET_KEY')
+    raven_dsn = os.getenv('RAVEN_DSN')
+    return shell_env(SECRET_KEY=secret_key, RAVEN_DSN=raven_dsn,
+                     DB_NAME=DB_NAME, DB_PASSWORD=DB_PASSWORD)
 
 
 @task
@@ -103,8 +112,9 @@ def bootstrap():
     clone_or_pull_git_repo()
     install_pip_requirements()
     with cd(PROJECT_ROOT):
-        with prefix('source envs.txt && source bin/activate'):
-            create_dj_superuser()
-            collect_static()
-            create_nginx_symlink_from_tpl('nginx.conf.tpl')
-            create_uwsgi_config_from_tpl('uwsgi.ini.tpl')
+        with initialize_env_vars():
+            with prefix('source bin/activate'):
+                create_dj_superuser()
+                collect_static()
+                create_nginx_symlink_from_tpl('nginx.conf.tpl')
+                create_uwsgi_config_from_tpl('uwsgi.ini.tpl')
