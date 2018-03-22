@@ -21,41 +21,35 @@ def install_system_packages():
     sudo('apt-get -y install python3-pip python3-dev libpq-dev postgresql '
          'postgresql-contrib')
     sudo('apt-get -y install git')
-    sudo('pip3 install virtualenv')
-    return
+    run('pip3 install virtualenv --user')
 
 
-def recreate_database():
+def create_database():
     with settings(warn_only=True):
-        sudo('su - postgres psql -c "dropdb %s"' % DB_NAME)
         sudo('su - postgres psql -c "createdb %s"' % DB_NAME)
-    return
 
 
-def change_postgres_user_password(db_password):
-    command = "alter user postgres with password '%s'" % db_password
+def change_postgres_user_password():
+    command = "alter user postgres with password '%s'" % DB_PASSWORD
     sudo('sudo -u postgres psql -c "%s"' % command)
-    return
 
 
 def clone_or_pull_git_repo():
     if not exists(PROJECT_ROOT, use_sudo=True):
         sudo('mkdir -p %s' % PROJECT_PATH)
+        sudo('chown -R %s %s' % (env.user, PROJECT_PATH))
         with(cd(PROJECT_PATH)):
-            sudo('git clone %s' % REPO)
+            run('git clone %s' % REPO)
     else:
         with cd(PROJECT_ROOT):
-            sudo('git pull origin')
-    sudo('chown -R %s %s' % (env.user, PROJECT_ROOT))
-    return
+            run('git pull origin')
 
 
 def install_pip_requirements():
     with cd(PROJECT_PATH):
-        sudo('virtualenv %s' % PROJECT_NAME)
+        run('python3 -m virtualenv %s' % PROJECT_NAME)
     with cd(PROJECT_ROOT):
-        sudo('source bin/activate && pip3 install -r requirements.txt')
-    return
+        run('source bin/activate && pip3 install -r requirements.txt')
 
 
 def create_dj_superuser():
@@ -65,28 +59,27 @@ def create_dj_superuser():
                            "Password (again): ": superuser_password}):
         run('python3 manage.py createsuperuser --username admin '
             '--email admin@admin.com')
-    return
 
 
 def collect_static():
     run('python3 manage.py collectstatic --no-input')
-    return
 
 
 def create_nginx_symlink_from_tpl(tpl_filename):
-    sudo('PROJECT_PATH=%s PROJECT_NAME=%s envtpl %s --keep-template' % (
+    nginx_path = os.path.join('/etc', 'nginx')
+    run('PROJECT_PATH=%s PROJECT_NAME=%s envtpl %s --keep-template' % (
         PROJECT_PATH, PROJECT_NAME, os.path.join('configs', tpl_filename)))
-    sudo('ln -sf %s /etc/nginx/nginx.conf' % (os.path.join(
-        PROJECT_PATH, PROJECT_NAME, 'configs', 'nginx.conf')))
+    sudo('chmod -R 777 %s' % nginx_path)
+    run('ln -sf %s %s' % (
+        os.path.join(PROJECT_PATH, PROJECT_NAME, 'configs', 'nginx.conf'),
+        os.path.join(nginx_path, 'nginx.conf')))
     sudo('service nginx restart')
-    return
 
 
 def create_uwsgi_config_from_tpl(tpl_filename):
-    sudo('PROJECT_PATH=%s PROJECT_NAME=%s envtpl %s --keep-template' % (
+    run('PROJECT_PATH=%s PROJECT_NAME=%s envtpl %s --keep-template' % (
         PROJECT_PATH, PROJECT_NAME, os.path.join('configs', tpl_filename)))
-    sudo('uwsgi --ini configs/uwsgi.ini')
-    return
+    run('uwsgi --ini configs/uwsgi.ini')
 
 
 def initialize_env_vars():
@@ -99,8 +92,8 @@ def initialize_env_vars():
 @task
 def bootstrap():
     install_system_packages()
-    recreate_database()
-    change_postgres_user_password(DB_PASSWORD)
+    change_postgres_user_password()
+    create_database()
     clone_or_pull_git_repo()
     install_pip_requirements()
     with cd(PROJECT_ROOT), initialize_env_vars(), prefix('source bin/activate'):
